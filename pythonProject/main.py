@@ -3,7 +3,7 @@ from function import *
 if __name__ == '__main__':
     f = int(input("Saisir le numéreo de la fonction voulu : \n"))
     if f == 1:
-        recuperer_noms_presidents(fichier)
+        recuperer_noms_presidents()
     elif f == 2:
         prenoms_president()
     elif f == 3:

@@ -10,12 +10,12 @@ def list_of_files(directory, extension):
     return files_names
 
 #cette fonction prend un argument un dossier fichier en renvoyant un dictionnaire avec les noms des présidents de chaque discours
-def recuperer_noms_presidents(fichier):
+def recuperer_noms_presidents(speeches):
     liste = r"Nomination_(.*?)\d*\.txt"
     noms_presidents = {}
-    for file in os.listdir(fichier):
-        chemin = os.path.join(fichier, file)
-        if os.path.isfile(chemin) and fichier.endswith(".txt"):
+    for file in os.listdir(speeches):
+        chemin = os.path.join(speeches, file)
+        if os.path.isfile(chemin) and speeches.endswith(".txt"):
             match = re.search(liste, file)
         if match:
             nom_complet = math.group(1)
@@ -38,16 +38,16 @@ def prenoms_president():
         print("Nom :", noms[n-1], "", "Prénom : ", prenoms[n-1])
 
 #fonction qui prend en argument un fichier texte en renvoyant un fichier ayant transformé tout le fichier texte en lettre minsucule
-def minuscule(fichier):
+def minuscule(speeches):
     file1 = ""
-    with open(fichier, "r", encoding="utf-8") as f:
+    with open(speeches, "r", encoding="utf-8") as f:
         phrase = f.read()
     for i in phrase:
         if ord(i) > 64 and ord(i) < 91:
             file1 +=  chr(ord(i) + 32)
         else:
             file1 += i
-    with open(f"Cleaned/{fichier.split('.')[0].split('/')[-1]}", "w",
+    with open(f"cleaned/{speeches.split('.')[0].split('/')[-1]}", "w",
               encoding="utf-8") as f:
         f.write(file1)
     file2 = ""
@@ -56,7 +56,7 @@ def minuscule(fichier):
             file2 +=  " "
         elif ord(i) > 95 and ord(i) < 123 or ord(i) == 32 or i in "ùàéèôûîÉâêçŒœ" and not (i in ";:!?'"):
             file2 += i
-    with open(f"Cleaned/{fichier.split('.')[0].split('/')[-1]}",
+    with open(f"cleaned/{fichier.split('.')[0].split('/')[-1]}",
               "w", encoding="utf-8") as f:
         f.write(file2)
 
