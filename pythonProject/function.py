@@ -132,9 +132,22 @@ def calcul_matrice_tf_idf(fichier):
     return tfidf_matrix
 
 
+def all_speech(directory):
+    all_speeches = ""
+    for filename in os.listdir(directory):
+        score_tf_idf = dict()
+        with open(f"{directory}/{filename}", "r", encoding="utf-8") as f:
+            speech = f.read()
+            all_speeches += speech
+    return all_speeches
 
 
 
+def scalar_product(vectorsA,vectorsB):
+    result = 0
+    for i in range(len(vectorsA)):
+        result += vectorsA[i] * vectorsB[i]
+    return result
 
 
 
