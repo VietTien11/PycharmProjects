@@ -243,7 +243,6 @@ def mot_avec_plus_haut_tfidf(dictionnaire):
     return mot
 
 
-
 def text_ini(filename):
     content =""
     directory= 'speeches'
