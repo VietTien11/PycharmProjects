@@ -2,6 +2,12 @@ import os
 import math
 import re
 
+
+def real_list_of_file(directory):
+    files_names = []
+    for filename in os.listdir(directory):
+        files_names.append(filename)
+    return files_names
 def list_of_files(directory, extension):
     files_names = []
     for filename in os.listdir(directory):
@@ -38,7 +44,7 @@ def prenoms_president():
         print("Nom :", noms[n-1], "", "Prénom : ", prenoms[n-1])
 
 #fonction qui prend en argument un fichier texte en renvoyant un fichier ayant transformé tout le fichier texte en lettre minsucule
-def minuscule(speeches):
+def cleened(speeches):
     file1 = ""
     with open(speeches, "r", encoding="utf-8") as f:
         phrase = f.read()
@@ -142,16 +148,106 @@ def all_speech(directory):
     return all_speeches
 
 
+def question_tokenisation(question):
+    question = question.lower()
+    question = re.sub(r"\w[’']", '', question)
+    question = re.sub(r"-", ' ', question)
+    question = re.sub(r"[^\w\s]", '', question)
+    question = re.sub(r"\s+", ' ', question).strip()
+    return question
 
-def scalar_product(vectorsA,vectorsB):
-    result = 0
+question = "europe"
+
+question = question_tokenisation(question)
+
+print(question)
+
+def calculer_idf_question(question, repertoire):
+    compte_mot_document = {}
+    idf_corpus = calcul_idf(repertoire)
+    print(idf_corpus)
+    contenu_question = set(question.split())
+    for mot in contenu_question:
+        if mot in contenu_question:
+            if mot not in idf_corpus:
+                compte_mot_document[mot] = 0
+            else:
+                compte_mot_document[mot] = idf_corpus[mot]
+    return compte_mot_document
+
+idf_question = calculer_idf_question(question, "cleaned")
+print("aa",idf_question)
+
+
+def calculer_tfidf(question, calculer_idf):
+    mots_dans_question = question.split()
+
+    tfidf_question = {}
+    for mot in set(mots_dans_question):
+        tf = mots_dans_question.count(mot)
+        idf = calculer_idf.get(mot, 0)
+        tfidf_question[mot] = tf * idf
+
+    return tfidf_question
+
+tfidf_question = calculer_tfidf(question, idf_question)
+
+def produit_scalaire(vecteursA,vecteursB):
+    resultat = 0
     for i in range(len(vectorsA)):
-        result += vectorsA[i] * vectorsB[i]
-    return result
+        resultat += vecteursA[i] * vecteursB[i]
+    return resultat
+
+def calculer_norme(vecteursA):
+    norme = math.sqrt(sum(x ** 2 for x in vecteursA)) # Calcul de la norme euclidienne du vecteur A
+    return norme
+
+def similarite(vecteursA,vecteursB):
+    score=(produit_scalaire(vecteursA,vecteursB))/(calculer_norme(vecteursA)*calculer_norme(vecteursB))
+    return score
+
+
+def document_le_plus_pertinent(matrice_similarite):
+    name_of_files = real_list_of_file("./speeches")
+    maximum = similarite(matrice_similarite[0], matrice_similarite[len(matrice_similarite) - 1])
+
+    for i in range(len(matrice_similarite) - 1):
+        similaire = similarite(matrice_similarite[i], matrice_similarite[len(matrice_similarite) - 1])
+
+        if maximum < similaire:
+            maximum = similaire
+            indice_maximum = i
+
+    return noms_des_fichiers[indice_maximum]
 
 
 
+def extraire_phrase_avec_mot(chemin_document, mot):
+    with open(chemin_document, 'r', encoding='utf-8') as fichier:
+        texte = fichier.read()
+        phrases = texte.split(".")
+        for phrase in phrases:
+            if mot in phrase.lower():
+                return phrase.strip() + '.'
+    return "Le mot n'a pas été trouvé dans le document."
 
 
 
+def mot_avec_plus_haut_tfidf(dictionnaire):
+    maximum = 0
+    mot = ""
+    for cle, valeur in dict.items():
+        if valeur > maximum:
+            maximum = valeur
+            mot = cle
+    return mot
 
+
+
+def text_ini(filename):
+    content =""
+    directory= 'Speeches'
+    with open(f"{directory}/{filename}", "r", encoding="utf-8") as f:
+        content = f.read()
+        content = content.replace("\n","").split(".")
+    return content

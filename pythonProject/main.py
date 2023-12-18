@@ -18,7 +18,10 @@ if __name__ == '__main__':
         calcul_tf(text)
     elif f == 8:
         calcul_matrice_tf_idf(fichier)
+    elif f == 9:
+        question_tokenisation(question)
     else :
         print('indice incorrect')
+
 
 
