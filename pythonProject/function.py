@@ -246,7 +246,7 @@ def mot_avec_plus_haut_tfidf(dictionnaire):
 
 def text_ini(filename):
     content =""
-    directory= 'Speeches'
+    directory= 'speeches'
     with open(f"{directory}/{filename}", "r", encoding="utf-8") as f:
         content = f.read()
         content = content.replace("\n","").split(".")
