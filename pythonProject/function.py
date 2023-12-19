@@ -109,7 +109,6 @@ def occurence(phrase , str, i):
 liste_TF = ({},{},{},{},{},{},{},{})
 
 
-
 #fonction prenant en argument une matrice et renvoyant les mots les moins importants
 def mots_pas_importants(matrice):
     liste_mots = []
