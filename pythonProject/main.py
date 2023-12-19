@@ -37,4 +37,3 @@ if __name__ == '__main__':
         print("Le premier président à avoir parlé de l'écologie est :",premier_president_ecologie(directory))
     if choix == 10:
         print(mots_cités_par_tout_le_monde(directory, matrice_tfidf))
-4
