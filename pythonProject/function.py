@@ -2,18 +2,19 @@ import os
 import math
 import re
 
-
-def real_list_of_file(directory):
-    files_names = []
-    for filename in os.listdir(directory):
-        files_names.append(filename)
+def call_list_of_files():
+    directory = "./speeches"
+    files_names = list_of_files(directory, "txt")
     return files_names
+
+
 def list_of_files(directory, extension):
     files_names = []
     for filename in os.listdir(directory):
         if filename.endswith(extension):
             files_names.append(filename)
     return files_names
+
 
 #cette fonction prend un argument un dossier fichier en renvoyant un dictionnaire avec les noms des présidents de chaque discours
 def recuperer_noms_presidents(speeches):
@@ -32,7 +33,6 @@ def recuperer_noms_presidents(speeches):
     return noms_presidents
 
 
-
 # Cette fonction permet de déterminer le prénom du président en fonction de l'indice du discours choisi par l'utilisateur
 def prenoms_president():
     n = int(input("saisir l'indice du discours voulu :\n"))
@@ -43,10 +43,19 @@ def prenoms_president():
     else:
         print("Nom :", noms[n-1], "", "Prénom : ", prenoms[n-1])
 
+#Fonction qui s'assure qu'un répertoire nommé "cleaned" existe à l'emplacement spécifié. S'il n'existe pas, elle le crée, et si ce répertoire est déjà présent, elle ne fait rien.
+def clean_directory():
+    directory = "cleaned"
+    parent_directory = r"C:\Users\giang\OneDrive\Bureau\Travail VietTien\L1\projet python\PycharmProjects\pythonProject"
+    path = os.path.join(parent_directory, directory)
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+
 #fonction qui prend en argument un fichier texte en renvoyant un fichier ayant transformé tout le fichier texte en lettre minsucule
-def cleened(speeches):
+def cleaned():
     file1 = ""
-    with open(speeches, "r", encoding="utf-8") as f:
+    with open("speeches/", "r", encoding="utf-8") as f:
         phrase = f.read()
     for i in phrase:
         if ord(i) > 64 and ord(i) < 91:
@@ -65,6 +74,19 @@ def cleened(speeches):
     with open(f"cleaned/{fichier.split('.')[0].split('/')[-1]}",
               "w", encoding="utf-8") as f:
         f.write(file2)
+
+#Fonction qui permet de clean un fichier en appelant la fonction call_list_of files
+def call_clean_files():
+    files_names = call_list_of_files()
+    for noms in files_names:
+        clean_files(noms)
+
+#Fonction qui permet d'appeler les fichiers clean
+def call_list_of_cleaned_files():
+    directory = "./cleaned"
+    files_names = list_of_files(directory, "txt")
+    return files_names
+
 
 #fonction qui prend en argument une phrase et renvoyant le nombre d'occurence des mots présents dans la phrase
 def occurence(phrase : str, i):
@@ -96,6 +118,7 @@ def mots_pas_importants(matrice):
     return liste_mots
 
 
+directory = "./speeches"
 #fonction prenant en argument un fichier texte en renvoyant le score idf
 def calcul_idf(directory):
     word_document_count = {}
@@ -119,6 +142,7 @@ def calcul_tf(text):
         score_tf[word] = score_tf.get(word, 0) + 1
     return score_tf
 
+
 #cette fonction prend en agrument un fichier en renvoyant une matrice
 def calcul_matrice_tf_idf(fichier):
     tfidf_matrix = {}
@@ -138,16 +162,8 @@ def calcul_matrice_tf_idf(fichier):
     return tfidf_matrix
 
 
-def all_speech(directory):
-    all_speeches = ""
-    for filename in os.listdir(directory):
-        score_tf_idf = dict()
-        with open(f"{directory}/{filename}", "r", encoding="utf-8") as f:
-            speech = f.read()
-            all_speeches += speech
-    return all_speeches
 
-
+#Fonction qui clean la question
 def question_tokenisation(question):
     question = question.lower()
     question = re.sub(r"\w[’']", '', question)
@@ -156,12 +172,10 @@ def question_tokenisation(question):
     question = re.sub(r"\s+", ' ', question).strip()
     return question
 
-question = "europe"
-
+question = ''
 question = question_tokenisation(question)
 
-print(question)
-
+#Fonction qui calcule le score idf d'une question
 def calculer_idf_question(question, repertoire):
     compte_mot_document = {}
     idf_corpus = calcul_idf(repertoire)
@@ -176,28 +190,29 @@ def calculer_idf_question(question, repertoire):
     return compte_mot_document
 
 idf_question = calculer_idf_question(question, "cleaned")
-print("aa",idf_question)
 
-
+#Fonction qui calcule le score TF-IDF pour chaque mot présent dans une question donnée, en utilisant un dictionnaire des scores IDF préalablement calculés.
 def calculer_tfidf(question, calculer_idf):
     mots_dans_question = question.split()
-
     tfidf_question = {}
     for mot in set(mots_dans_question):
         tf = mots_dans_question.count(mot)
         idf = calculer_idf.get(mot, 0)
         tfidf_question[mot] = tf * idf
-
     return tfidf_question
 
 tfidf_question = calculer_tfidf(question, idf_question)
 
+
+#Fonction qui calcule le produit scaleire de deux vecteurs saisie en argument
 def produit_scalaire(vecteursA,vecteursB):
     resultat = 0
     for i in range(len(vectorsA)):
         resultat += vecteursA[i] * vecteursB[i]
     return resultat
 
+
+#Fonction qui calcule la norme d'un vecteur mis en argument
 def calculer_norme(vecteursA):
     norme = math.sqrt(sum(x ** 2 for x in vecteursA)) # Calcul de la norme euclidienne du vecteur A
     return norme
@@ -206,22 +221,18 @@ def similarite(vecteursA,vecteursB):
     score=(produit_scalaire(vecteursA,vecteursB))/(calculer_norme(vecteursA)*calculer_norme(vecteursB))
     return score
 
-
+#Fonction prenant en argument une matric et renvoie le nom du fichier correspondant à l'indice de la plus grande similarité.
 def document_le_plus_pertinent(matrice_similarite):
     name_of_files = real_list_of_file("./speeches")
     maximum = similarite(matrice_similarite[0], matrice_similarite[len(matrice_similarite) - 1])
-
     for i in range(len(matrice_similarite) - 1):
         similaire = similarite(matrice_similarite[i], matrice_similarite[len(matrice_similarite) - 1])
-
         if maximum < similaire:
             maximum = similaire
             indice_maximum = i
+    return name_of_files[indice_maximum]
 
-    return noms_des_fichiers[indice_maximum]
-
-
-
+#Fonction qui prend en argument le chemin d'un dossier et un mot, renvoyant la phrase contenant ce mot dans le fichier mis en argument
 def extraire_phrase_avec_mot(chemin_document, mot):
     with open(chemin_document, 'r', encoding='utf-8') as fichier:
         texte = fichier.read()
@@ -233,20 +244,4 @@ def extraire_phrase_avec_mot(chemin_document, mot):
 
 
 
-def mot_avec_plus_haut_tfidf(dictionnaire):
-    maximum = 0
-    mot = ""
-    for cle, valeur in dict.items():
-        if valeur > maximum:
-            maximum = valeur
-            mot = cle
-    return mot
 
-
-def text_ini(filename):
-    content =""
-    directory= 'speeches'
-    with open(f"{directory}/{filename}", "r", encoding="utf-8") as f:
-        content = f.read()
-        content = content.replace("\n","").split(".")
-    return content
